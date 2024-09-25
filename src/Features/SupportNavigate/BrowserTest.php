@@ -85,6 +85,7 @@ class BrowserTest extends \Tests\BrowserTestCase
 
             Route::get('/page-with-alpine-for-loop', PageWithAlpineForLoop::class);
             Route::get('/script-component', ScriptComponent::class);
+            Route::get('/page-with-autofocus-input', PageWithAutofocusInput::class);
         };
     }
 
@@ -991,6 +992,18 @@ class BrowserTest extends \Tests\BrowserTestCase
             ->assertPathIsNot('/livewire-dusk/null');
     }
 
+    public function test_autofocus_attribute_can_make_input_focused_after_navigation()
+    {
+        $this->browse(function ($browser) {
+            $browser
+                ->visit('/first')
+                ->assertSee('On first')
+                ->click('@redirect.to.page.with.autofocus.input')
+                ->waitFor('@autofocus.input')
+                ->assertFocused('@autofocus.input');
+        });
+    }
+
     protected function registerComponentTestRoutes($routes)
     {
         $registered = 0;
@@ -1034,6 +1047,7 @@ class FirstPage extends Component
             <button type="button" wire:click="redirectToPageTwoUsingNavigate" dusk="redirect.to.second">Redirect to second page</button>
             <a href="/redirect-to-second" wire:navigate dusk="redirect.to.second.link">Redirect to second page from link</a>
             <button type="button" wire:click="redirectToPageTwoUsingNavigateAndDestroyingSession" dusk="redirect.to.second.and.destroy.session">Redirect to second page and destroy session</button>
+            <a href="/page-with-autofocus-input" wire:navigate dusk="redirect.to.page.with.autofocus.input">Redirect to page with autofocus input</a>
 
             <livewire:first-page-child />
 
@@ -1388,6 +1402,19 @@ class ScriptComponent extends Component
             <div>
                 <div>On script component</div>
                 <a href="/first" wire:navigate dusk="link.to.first">Go to first page</a>
+            </div>
+        HTML;
+    }
+}
+
+class PageWithAutofocusInput extends Component
+{
+    public function render()
+    {
+        return <<<'HTML'
+            <div>
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" autofocus dusk="autofocus.input"> />
             </div>
         HTML;
     }

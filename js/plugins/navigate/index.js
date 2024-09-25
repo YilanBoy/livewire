@@ -11,7 +11,7 @@ import { fetchHtml } from "./fetch"
 let enablePersist = true
 let showProgressBar = true
 let restoreScroll = true
-let autofocus = false
+let autofocus = true
 
 export default function (Alpine) {
 
